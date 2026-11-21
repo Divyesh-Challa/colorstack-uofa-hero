@@ -40,7 +40,7 @@ const url = q.get('url') || '';
 cta.href = /^https:\/\//.test(url) ? url : 'https://discord.gg/kuAVAyB6N7';
 function tick() {
   const now = Date.now(), ms = start - now;
-  if (isNaN(start) || now > end) { $('clock').innerHTML = ''; $('when').textContent = 'Stay tuned for the next one.'; cta.textContent = 'Join the Discord →'; cta.href = 'https://discord.gg/kuAVAyB6N7'; return; }
+  if (isNaN(start) || now > end) { $('clock').innerHTML = ''; $('name').textContent = 'More events coming soon'; $('when').textContent = 'Stay tuned for the next one.'; cta.textContent = 'Join the Discord →'; cta.href = 'https://discord.gg/kuAVAyB6N7'; return; }
   if (ms <= 0) { $('clock').innerHTML = '<span class="live">Happening now</span>'; return; }
   const parts = [[Math.floor(ms / 864e5), 'days'], [Math.floor(ms / 36e5) % 24, 'hrs'], [Math.floor(ms / 6e4) % 60, 'min'], [Math.floor(ms / 1e3) % 60, 'sec']];
   $('clock').innerHTML = parts.map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><span>${l}</span></div>`).join('');
