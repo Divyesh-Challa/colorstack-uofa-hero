@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { overflow:hidden; background:radial-gradient(600px 260px at 100% 0%, rgba(24,160,78,.22), transparent 70%), radial-gradient(420px 220px at 0% 100%, rgba(84,151,139,.18), transparent 70%), var(--bg); }
+  .wrap { flex-direction:row; align-items:center; justify-content:space-between; gap:32px; }
+  h1 { font-size:clamp(32px,5vw,56px); line-height:1.05; font-weight:800; letter-spacing:-.03em; margin:10px 0 10px; }
+  .bars { display:flex; flex-direction:column; gap:14px; transform:rotate(-12deg) skewX(-12deg); flex-shrink:0; }
+  .bars i { display:block; width:150px; height:22px; border-radius:6px; animation:bob 4s ease-in-out infinite; box-shadow:0 12px 30px rgba(0,0,0,.45); }
+  .bars i:nth-child(1) { background:var(--teal); }
+  .bars i:nth-child(2) { background:var(--green); animation-delay:-1.3s; margin-left:26px; }
+  .bars i:nth-child(3) { background:var(--gold); animation-delay:-2.6s; margin-left:52px; }
+  @keyframes bob { 50% { transform:translateY(-6px); } }
+  @media (max-width:640px) { .bars { display:none; } }
+</style>
+</head>
+<body>
+<section class="wrap">
+  <div>
+    <div class="eyebrow reveal" id="eyebrow">ColorStack UofA</div>
+    <h1 class="reveal"><span id="title"></span> <span class="grad" id="accent"></span></h1>
+    <p class="lead reveal" id="sub"></p>
+  </div>
+  <div class="bars reveal" aria-hidden="true"><i></i><i></i><i></i></div>
+</section>
+<script>
+// Usage: header.html?eyebrow=Events&title=What's&accent=happening&sub=One line of intro
+const q = new URLSearchParams(location.search);
+for (const k of ['eyebrow', 'title', 'accent', 'sub']) if (q.get(k)) document.getElementById(k).textContent = q.get(k);
+document.title = [q.get('title'), q.get('accent')].filter(Boolean).join(' ') + ' · ColorStack UofA';
+document.querySelectorAll('.reveal').forEach((el, i) => setTimeout(() => el.classList.add('in'), 90 * i));
+</script>
+</body>
+</html>

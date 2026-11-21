@@ -25,6 +25,9 @@
   footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:22px; color:var(--muted); font-size:13px; }
   footer nav { display:flex; gap:16px; } footer a { text-decoration:none; } footer a:hover { color:var(--ink); }
   @media (max-width:760px) { .grid { grid-template-columns:1fr; } .stats { display:none; } }
+  /* ?compact: footer strip only, for subpages */
+  .compact .panel { display:none; }
+  .compact footer { margin-top:0; padding-top:18px; border-top:1px solid var(--line); align-items:center; }
 </style>
 </head>
 <body>
@@ -54,6 +57,7 @@
   </footer>
 </section>
 <script>
+if (new URLSearchParams(location.search).has('compact')) document.body.classList.add('compact');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.querySelectorAll('.reveal').forEach((el, i) => setTimeout(() => el.classList.add('in'), 90 * i));
 // count-up for the stat numbers

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Next event · ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display:flex; align-items:center; padding:0 16px; }
+  .bar { width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; border-radius:20px; padding:20px 24px;
+    border:1px solid var(--line); background:linear-gradient(100deg, rgba(24,160,78,.18), rgba(224,194,26,.08) 60%, transparent), var(--card); }
+  .name { font-size:clamp(20px,2.6vw,26px); font-weight:800; margin-top:4px; }
+  .when { color:var(--muted); font-size:14px; margin-top:2px; }
+  .clock { display:flex; gap:10px; }
+  .clock div { min-width:64px; text-align:center; background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:12px; padding:8px 6px; }
+  .clock b { display:block; font-size:24px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .clock span { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.1em; }
+  .live { font-size:20px; font-weight:800; color:var(--gold); }
+  .live::before { content:""; display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--gold); margin-right:8px; animation:pulse 1.4s infinite; }
+  @keyframes pulse { 50% { opacity:.3; } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div><div class="eyebrow">Next event</div><div class="name" id="name"></div><div class="when" id="when"></div></div>
+  <div class="clock" id="clock" aria-live="off"></div>
+  <a class="btn primary" id="cta" target="_blank" rel="noopener">Register →</a>
+</div>
+<script>
+// Usage: countdown.html?name=Build Night&t=2026-11-21T01:00:00Z&end=2026-11-21T03:00:00Z&url=https://luma.com/...
+// shortcut: the date lives in the embed URL, so it is updated by hand (or by the agent) for each new event; no backend.
+const q = new URLSearchParams(location.search), start = new Date(q.get('t')), end = new Date(q.get('end') || +start + 2 * 3600e3);
+const $ = id => document.getElementById(id), cta = $('cta');
+$('name').textContent = q.get('name') || 'ColorStack UofA event';
+if (!isNaN(start)) $('when').textContent = start.toLocaleString('en-CA', { weekday:'long', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', timeZone:'America/Edmonton' }) + (q.get('where') ? ' · ' + q.get('where') : '');
+const url = q.get('url') || '';
+cta.href = /^https:\/\//.test(url) ? url : 'https://discord.gg/kuAVAyB6N7';
+function tick() {
+  const now = Date.now(), ms = start - now;
+  if (isNaN(start) || now > end) { $('clock').innerHTML = ''; $('when').textContent = 'Stay tuned for the next one.'; cta.textContent = 'Join the Discord →'; cta.href = 'https://discord.gg/kuAVAyB6N7'; return; }
+  if (ms <= 0) { $('clock').innerHTML = '<span class="live">Happening now</span>'; return; }
+  const parts = [[Math.floor(ms / 864e5), 'days'], [Math.floor(ms / 36e5) % 24, 'hrs'], [Math.floor(ms / 6e4) % 60, 'min'], [Math.floor(ms / 1e3) % 60, 'sec']];
+  $('clock').innerHTML = parts.map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><span>${l}</span></div>`).join('');
+}
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
