@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helpful? · ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display:flex; align-items:center; padding:0 16px; }
+  .bar { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 18px; }
+  .q { font-weight:700; } .q span { display:block; color:var(--muted); font-weight:500; font-size:13px; }
+  button { font:inherit; cursor:pointer; color:var(--ink); background:transparent; }
+  .btn.voted { background:var(--green); border-color:var(--green); color:#fff; }
+  .btn .n { font-variant-numeric:tabular-nums; opacity:.85; }
+  .pop { animation:pop .35s ease-out; } @keyframes pop { 50% { transform:scale(1.12); } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="q">Was this resource helpful?<span>Votes help other members find the best material.</span></div>
+  <button class="btn" id="vote" aria-pressed="false" hidden>👍 Helpful <span class="n" id="n"></span></button>
+</div>
+<script>
+// shortcut: votes live on the free Abacus counter API (no login, so one person could vote from several browsers); move to a real backend if votes ever matter.
+const id = (new URLSearchParams(location.search).get('id') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 60);
+const API = 'https://abacus.jasoncameron.dev', NS = 'colorstack-uofa-resources';
+const btn = document.getElementById('vote'), n = document.getElementById('n');
+const key = 'voted:' + id;
+let voted = false; try { voted = localStorage.getItem(key) === '1'; } catch {}
+function show(v) { n.textContent = '· ' + v; btn.hidden = false; btn.classList.toggle('voted', voted); btn.setAttribute('aria-pressed', voted); }
+if (id) fetch(`${API}/get/${NS}/${id}`).then(r => r.json()).then(d => show(d.value || 0)).catch(() => {});
+btn.onclick = () => {
+  if (voted) return;
+  voted = true; try { localStorage.setItem(key, '1'); } catch {}
+  btn.classList.add('pop');
+  fetch(`${API}/hit/${NS}/${id}`).then(r => r.json()).then(d => show(d.value)).catch(() => show('✓'));
+};
+</script>
+</body>
+</html>
