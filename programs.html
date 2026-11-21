@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programs · ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:28px; perspective:1200px; }
+  .card { position:relative; display:flex; flex-direction:column; background:var(--card); border-radius:18px; overflow:hidden; text-decoration:none;
+    border:1px solid var(--line); transform-style:preserve-3d; transition:transform .25s ease-out, box-shadow .3s, border-color .3s; }
+  .card:hover { box-shadow:0 24px 60px rgba(0,0,0,.55), 0 0 0 1px var(--accent); border-color:transparent; }
+  .card::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
+    background:radial-gradient(400px circle at var(--x,50%) var(--y,50%), rgba(255,255,255,.10), transparent 40%); }
+  .card:hover::after { opacity:1; }
+  .card img { width:100%; aspect-ratio:2/1; object-fit:cover; object-position:top; display:block; transition:transform .6s; }
+  .card:hover img { transform:scale(1.05); }
+  .body { padding:18px 20px 22px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .tag { align-self:flex-start; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; color:var(--accent); background:color-mix(in srgb, var(--accent) 15%, transparent); }
+  h3 { font-size:21px; font-weight:800; }
+  .body p { color:var(--muted); font-size:15px; line-height:1.5; flex:1; }
+  .more { font-weight:700; font-size:14px; color:var(--accent); }
+  .card:hover .more span { transform:translateX(4px); }
+  .more span { display:inline-block; transition:transform .2s; }
+  @media (max-width:760px) {
+    .cards { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:14px; padding-bottom:8px; margin-inline:-20px; padding-inline:20px; scrollbar-width:none; }
+    .cards::-webkit-scrollbar { display:none; }
+    .card { flex:0 0 78%; scroll-snap-align:start; }
+  }
+</style>
+</head>
+<body>
+<section class="wrap">
+  <div class="eyebrow reveal">What we do</div>
+  <h2 class="reveal">Three ways to <span class="grad">level up</span></h2>
+  <p class="lead reveal">Practise with peers, get the resources you need and put your skills to work.</p>
+  <div class="cards">
+    <a class="card reveal" style="--accent:var(--teal)" href="https://discord.gg/kuAVAyB6N7" target="_blank" rel="noopener">
+      <img src="img/leetnite.jpg" alt="LeetNite poster">
+      <div class="body"><span class="tag">Coding Session</span><h3>LeetNite</h3>
+        <p>Work through technical interview problems in beginner, intermediate and advanced groups. Free food included.</p>
+        <span class="more">Get the next date <span>→</span></span></div>
+    </a>
+    <a class="card reveal" style="--accent:var(--green)" href="https://forms.gle/4HZTbE44SBWqmvz99" target="_blank" rel="noopener">
+      <img src="img/levelup.jpg" alt="Level Up your strategy poster">
+      <div class="body"><span class="tag">Resources</span><h3>Resource Lending</h3>
+        <p>Borrow interview-prep and learning resources that can be hard to afford, like LeetCode Premium.</p>
+        <span class="more">Request access <span>→</span></span></div>
+    </a>
+    <a class="card reveal" style="--accent:var(--gold)" href="https://luma.com/a49x3gcl" target="_blank" rel="noopener">
+      <img src="img/buildnight.jpg" alt="Build Night poster">
+      <div class="body"><span class="tag">Competition</span><h3>Build and Pitch</h3>
+        <p>Team up on a real problem with mentor support, then pitch your solution to judges.</p>
+        <span class="more">See Build Night <span>→</span></span></div>
+    </a>
+  </div>
+</section>
+<script>
+document.querySelectorAll('.reveal').forEach((el, i) => setTimeout(() => el.classList.add('in'), 80 * i));
+// 3D tilt and spotlight that follow the pointer
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches && matchMedia('(hover: hover)').matches)
+  document.querySelectorAll('.card').forEach(c => {
+    c.addEventListener('pointermove', e => {
+      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      c.style.transform = `rotateY(${(x - .5) * 10}deg) rotateX(${(.5 - y) * 10}deg) translateZ(10px)`;
+      c.style.setProperty('--x', x * 100 + '%'); c.style.setProperty('--y', y * 100 + '%');
+    });
+    c.addEventListener('pointerleave', () => c.style.transform = '');
+  });
+</script>
+</body>
+</html>

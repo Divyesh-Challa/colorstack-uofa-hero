@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join · ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .panel { position:relative; overflow:hidden; border-radius:26px; padding:clamp(28px,5vw,56px); border:1px solid var(--line);
+    background:radial-gradient(700px 380px at 100% 0%, rgba(24,160,78,.28), transparent 65%), radial-gradient(500px 300px at 0% 100%, rgba(224,194,26,.16), transparent 65%), var(--card); }
+  .panel::before { content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; pointer-events:none;
+    background:conic-gradient(from var(--a,0deg), transparent 0 70%, var(--green), var(--gold), transparent 85%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:spin 6s linear infinite; }
+  @property --a { syntax:"<angle>"; inherits:false; initial-value:0deg; }
+  @keyframes spin { to { --a:360deg; } }
+  .grid { display:grid; grid-template-columns:1.3fr 1fr; gap:32px; align-items:center; }
+  .ctas { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .stat { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:18px; }
+  .stat b { display:block; font-size:clamp(26px,3vw,36px); font-weight:800; }
+  .stat span { color:var(--muted); font-size:14px; }
+  footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:22px; color:var(--muted); font-size:13px; }
+  footer nav { display:flex; gap:16px; } footer a { text-decoration:none; } footer a:hover { color:var(--ink); }
+  @media (max-width:760px) { .grid { grid-template-columns:1fr; } .stats { display:none; } }
+</style>
+</head>
+<body>
+<section class="wrap">
+  <div class="panel">
+    <div class="grid">
+      <div>
+        <div class="eyebrow reveal">Get involved</div>
+        <h2 class="reveal">Find your people <span class="grad">in tech.</span></h2>
+        <p class="lead reveal">Open to students from every faculty and experience level. Come to an event, practise for interviews or help run the chapter.</p>
+        <div class="ctas reveal">
+          <a class="btn primary" href="https://discord.gg/kuAVAyB6N7" target="_blank" rel="noopener">Join the Discord →</a>
+          <a class="btn" href="https://forms.gle/wV6T9eg2CgfzxZFo6" target="_blank" rel="noopener">Volunteer with us</a>
+        </div>
+      </div>
+      <div class="stats reveal">
+        <div class="stat"><b data-to="13000" data-suffix="+">0</b><span>ColorStack members</span></div>
+        <div class="stat"><b data-to="1000" data-suffix="+">0</b><span>schools across the network</span></div>
+        <div class="stat"><b data-to="3">0</b><span>chapter programs</span></div>
+        <div class="stat"><b>Free</b><span>to join, always</span></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <span>ColorStack Student Chapter · University of Alberta · Edmonton</span>
+    <nav><a href="https://www.instagram.com/colorstackuofa/" target="_blank" rel="noopener">Instagram</a><a href="https://discord.gg/kuAVAyB6N7" target="_blank" rel="noopener">Discord</a><a href="mailto:colorstackuofachapter@gmail.com" target="_blank">Email</a></nav>
+  </footer>
+</section>
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('.reveal').forEach((el, i) => setTimeout(() => el.classList.add('in'), 90 * i));
+// count-up for the stat numbers
+document.querySelectorAll('[data-to]').forEach(el => {
+  const to = +el.dataset.to, suf = el.dataset.suffix || '', t0 = performance.now(), dur = 1600;
+  const step = now => {
+    const p = reduce ? 1 : Math.min(1, (now - t0) / dur), v = Math.round(to * (1 - Math.pow(1 - p, 3)));
+    el.textContent = v.toLocaleString('en-CA') + (p === 1 ? suf : '');
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+});
+</script>
+</body>
+</html>

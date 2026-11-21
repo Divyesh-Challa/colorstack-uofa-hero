@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments · ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .wrap { padding-inline:0; gap:22px; }
+  header { padding-inline:clamp(20px,5vw,64px); display:flex; justify-content:space-between; align-items:end; gap:16px; flex-wrap:wrap; }
+  .rows { display:flex; flex-direction:column; gap:14px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
+  .track { display:flex; gap:14px; width:max-content; animation:scroll 45s linear infinite; }
+  .track.rev { animation-direction:reverse; animation-duration:55s; }
+  .rows:hover .track { animation-play-state:paused; }
+  @keyframes scroll { to { transform:translateX(-50%); } }
+  .track img { height:clamp(150px,22vw,210px); aspect-ratio:3/4; object-fit:cover; border-radius:14px; display:block;
+    filter:saturate(.9); transition:transform .3s, filter .3s; }
+  .track img:hover { transform:scale(1.04); filter:saturate(1.1); }
+  .track.posters img { aspect-ratio:4/5; }
+</style>
+</head>
+<body>
+<section class="wrap">
+  <header>
+    <div><div class="eyebrow reveal">Moments</div><h2 class="reveal">Life at <span class="grad">ColorStack UofA</span></h2></div>
+    <a class="btn reveal" href="https://www.instagram.com/colorstackuofa/" target="_blank" rel="noopener">More on Instagram →</a>
+  </header>
+  <div class="rows reveal">
+    <div class="track" id="photos"></div>
+    <div class="track rev posters" id="posters"></div>
+  </div>
+</section>
+<script>
+const photos = [['members','Members at a chapter session'],['food','Free food at a ColorStack event'],['stackedup','Stacked Up summit highlights'],['job','A member celebrating a new job'],['signs','ColorStack signs around campus'],['reel10','Event announcement']];
+const posters = [['buildnight','Build Night poster'],['leetnite','LeetNite poster'],['welcome','Welcome Back poster'],['levelup','Level Up poster']];
+// each track holds its images twice so the -50% scroll loops seamlessly
+function fill(id, list) {
+  const html = list.map(([f, alt]) => `<img src="img/${f}.jpg" alt="${alt}" loading="lazy">`).join('');
+  const t = document.getElementById(id); t.innerHTML = html + html.replace(/alt="[^"]*"/g, 'alt="" aria-hidden="true"');
+}
+fill('photos', photos); fill('posters', [...posters, ...posters]);
+document.querySelectorAll('.reveal').forEach((el, i) => setTimeout(() => el.classList.add('in'), 100 * i));
+</script>
+</body>
+</html>
