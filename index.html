@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ColorStack UofA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#08090a; --ink:#f3f3ef; --muted:#a9b2ad; --teal:#54978B; --green:#18A04E; --gold:#E0C21A; }
+  * { box-sizing:border-box; margin:0; }
+  html, body { height:100%; }
+  body { background:var(--bg); color:var(--ink); font-family:"Plus Jakarta Sans",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; overflow:hidden; }
+  canvas { position:fixed; inset:0; width:100%; height:100%; }
+  .glow { position:fixed; inset:0; pointer-events:none;
+    background:radial-gradient(600px 400px at 78% 35%, rgba(24,160,78,.22), transparent 70%),
+               radial-gradient(500px 360px at 90% 85%, rgba(224,194,26,.14), transparent 70%); }
+  main { position:relative; height:100%; display:grid; grid-template-columns:1.1fr 1fr; align-items:center; gap:24px; padding:32px clamp(20px,6vw,80px); }
+  .copy > * { opacity:0; transform:translateY(14px); animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards; }
+  .copy > :nth-child(2){animation-delay:.12s} .copy > :nth-child(3){animation-delay:.24s} .copy > :nth-child(4){animation-delay:.36s} .copy > :nth-child(5){animation-delay:.48s}
+  @keyframes rise { to { opacity:1; transform:none; } }
+  .eyebrow { font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; }
+  h1 { font-size:clamp(40px,6.4vw,84px); line-height:1.02; font-weight:800; letter-spacing:-.02em; margin:14px 0 16px; }
+  h1 span { background:linear-gradient(90deg,var(--teal),var(--green),var(--gold),var(--green),var(--teal)); background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent; animation:sheen 8s linear infinite; }
+  @keyframes sheen { to { background-position:300% 0; } }
+  p.sub { font-size:clamp(16px,1.6vw,20px); color:var(--muted); max-width:30em; line-height:1.55; }
+  .ctas { display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:999px; font-weight:700; font-size:15px; text-decoration:none; color:var(--ink);
+    border:1px solid rgba(255,255,255,.18); transition:transform .2s, background .2s, box-shadow .2s; }
+  .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,.06); }
+  .btn.primary { background:var(--green); border-color:var(--green); color:#fff; box-shadow:0 8px 30px rgba(24,160,78,.35); }
+  .btn.primary:hover { background:#1bb558; box-shadow:0 10px 36px rgba(24,160,78,.5); }
+  .btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .stats { display:flex; gap:22px; margin-top:28px; color:var(--muted); font-size:14px; }
+  .stats b { display:block; color:var(--ink); font-size:22px; }
+  /* 3D logo stack */
+  .scene { height:100%; min-height:300px; display:grid; place-items:center; perspective:1100px; }
+  .stack { position:relative; width:0; height:0; transform-style:preserve-3d; }
+  .bar { position:absolute; transform-style:preserve-3d; }
+  .face { position:absolute; left:50%; top:50%; border-radius:6px; }
+  .shadow { position:absolute; width:340px; height:140px; left:-170px; top:-70px; border-radius:50%;
+    background:radial-gradient(closest-side, rgba(0,0,0,.75), transparent); filter:blur(10px); transform:translateZ(-90px); }
+  @media (max-width:760px) {
+    body { overflow:auto; }
+    main { grid-template-columns:1fr; grid-template-rows:auto 240px; text-align:left; padding-top:28px; }
+    .scene { order:-1; min-height:220px; }
+    .stats { display:none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .copy > * { animation:none; opacity:1; transform:none; } h1 span { animation:none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="dots" aria-hidden="true"></canvas>
+<div class="glow"></div>
+<main>
+  <div class="copy">
+    <div class="eyebrow">University of Alberta Chapter</div>
+    <h1>ColorStack <span>UofA</span></h1>
+    <p class="sub">Community, career and code for Black and Latinx students in tech at the University of Alberta. Allies welcome.</p>
+    <div class="ctas">
+      <a class="btn primary" href="https://discord.gg/kuAVAyB6N7" target="_blank" rel="noopener">Join the Discord →</a>
+      <a class="btn" href="https://www.instagram.com/colorstackuofa/" target="_blank" rel="noopener">Follow on Instagram</a>
+    </div>
+    <div class="stats"><div><b>13,000+</b>ColorStack members</div><div><b>1,000+</b>schools nationally</div></div>
+  </div>
+  <div class="scene" aria-label="Animated 3D ColorStack logo" role="img"><div class="stack" id="stack"><div class="shadow"></div></div></div>
+</main>
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stack = document.getElementById('stack');
+// logo bars top to bottom: teal, green, gold
+const COLORS = [['#6fb3a6','#54978B','#3b6c63'], ['#2fc066','#18A04E','#107236'], ['#f0d43a','#E0C21A','#a38c0f']];
+const W = 300, D = 86, H = 34, GAP = 74;
+function face(w, h, bg, t) {
+  const f = document.createElement('div'); f.className = 'face';
+  Object.assign(f.style, { width: w+'px', height: h+'px', marginLeft: -w/2+'px', marginTop: -h/2+'px', background: bg, transform: t });
+  return f;
+}
+const bars = COLORS.map(([top, front, side], i) => {
+  const b = document.createElement('div'); b.className = 'bar';
+  b.append(
+    face(W, D, `linear-gradient(135deg, ${top}, ${front})`, `translateZ(${H/2}px)`),
+    face(W, D, side, `rotateX(180deg) translateZ(${H/2}px)`),
+    face(W, H, front, `rotateX(90deg) translateZ(${D/2}px)`),
+    face(W, H, side, `rotateX(-90deg) translateZ(${D/2}px)`),
+    face(H, D, side, `rotateY(90deg) translateZ(${W/2}px)`),
+    face(H, D, side, `rotateY(-90deg) translateZ(${W/2}px)`)
+  );
+  b.firstChild.style.boxShadow = `0 0 40px ${front}66`;
+  stack.append(b);
+  return { el: b, z: (1 - i) * GAP };
+});
+let mx = 0, my = 0, tx = 0, ty = 0;
+addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
+addEventListener('deviceorientation', e => { if (e.gamma != null) { mx = e.gamma / 60; my = (e.beta - 45) / 90; } });
+const t0 = performance.now();
+function scale() { return Math.min(1, innerWidth < 760 ? innerWidth / 560 : innerWidth / 1300); }
+function frame(now) {
+  const t = (now - t0) / 1000;
+  tx += (mx - tx) * .06; ty += (my - ty) * .06;
+  stack.style.transform = `scale(${scale()}) rotateX(${58 - ty * 18}deg) rotateZ(${-38 + tx * 28 + (reduce ? 0 : Math.sin(t * .35) * 6)}deg)`;
+  bars.forEach((b, i) => {
+    const drop = reduce ? 0 : Math.max(0, 1 - (t - i * .18) / .9);   // intro: bars fall into place, staggered
+    const ease = drop * drop * 420;
+    const bob = reduce ? 0 : Math.sin(t * 1.4 + i * .9) * 8;
+    b.el.style.transform = `translateZ(${b.z + bob + ease}px)`;
+    b.el.style.opacity = reduce ? 1 : Math.min(1, (t - i * .18) / .4);
+  });
+  if (!reduce) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// drifting particles with mouse parallax
+const cv = document.getElementById('dots'), cx = cv.getContext('2d');
+const tints = ['84,151,139', '24,160,78', '224,194,26', '243,243,239'];
+let dots = [];
+function resize() {
+  const r = devicePixelRatio || 1; cv.width = innerWidth * r; cv.height = innerHeight * r; cx.setTransform(r, 0, 0, r, 0, 0);
+  dots = Array.from({ length: Math.round(innerWidth * innerHeight / 9000) }, () => ({
+    x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 1.6 + .4,
+    v: Math.random() * .25 + .05, d: Math.random() * .8 + .2, c: tints[Math.random() * 4 | 0], a: Math.random() * .5 + .15 }));
+}
+resize(); addEventListener('resize', resize);
+function draw() {
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  for (const p of dots) {
+    if (!reduce) { p.y -= p.v; if (p.y < -4) { p.y = innerHeight + 4; p.x = Math.random() * innerWidth; } }
+    cx.fillStyle = `rgba(${p.c},${p.a})`;
+    cx.beginPath(); cx.arc(p.x - tx * 30 * p.d, p.y - ty * 30 * p.d, p.r, 0, 7); cx.fill();
+  }
+  if (!reduce) requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
